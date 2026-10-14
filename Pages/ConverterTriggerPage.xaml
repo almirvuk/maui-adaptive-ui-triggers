@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 9 · Data trigger + converter -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:TriggersShowcase.Converters"
+             x:Class="TriggersShowcase.Pages.ConverterTriggerPage"
+             Title="09 · Converter">
+
+    <ContentPage.Resources>
+        <converters:IsGreaterThanConverter x:Key="gt" />
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="Converter in a trigger" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="Triggers only test equality; a converter turns 'greater than' into True." />
+            <Label Style="{StaticResource TryItLabel}" Text="Try it: step past 10." />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Stepper x:Name="stepper"
+                             Minimum="0"
+                             Maximum="20"
+                             Value="8" />
+
+                    <Label Style="{StaticResource BigValueLabel}"
+                           Text="{Binding x:DataType='Stepper', Source={x:Reference stepper}, Path=Value, StringFormat='{0:0}'}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding x:DataType='Stepper',
+                                                           Source={x:Reference stepper},
+                                                           Path=Value,
+                                                           Converter={StaticResource gt},
+                                                           ConverterParameter=10}"
+                                         Value="True">
+                                <Setter Property="TextColor" Value="Red" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Text="Over the limit!"
+                           TextColor="Red"
+                           FontAttributes="Bold"
+                           IsVisible="False">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding x:DataType='Stepper',
+                                                           Source={x:Reference stepper},
+                                                           Path=Value,
+                                                           Converter={StaticResource gt},
+                                                           ConverterParameter=10}"
+                                         Value="True">
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

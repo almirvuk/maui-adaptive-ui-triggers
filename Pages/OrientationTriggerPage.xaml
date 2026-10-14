@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 18 · OrientationStateTrigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TriggersShowcase.Pages.OrientationTriggerPage"
+             Title="18 · Orientation">
+
+    <!-- No ScrollView: the layout itself must change -->
+    <Grid Padding="32" RowSpacing="16" RowDefinitions="Auto,Auto,Auto,Auto,*">
+        <Label Style="{StaticResource HeadingLabel}" Text="OrientationStateTrigger" />
+        <Label Grid.Row="1" Style="{StaticResource CaptionLabel}"
+               Text="AdaptiveTrigger responds to window size; OrientationStateTrigger to device orientation." />
+        <Label Grid.Row="2" Style="{StaticResource TryItLabel}"
+               Text="Try it: rotate the iOS Simulator (Cmd+← / Cmd+→). On Mac it stays Landscape." />
+
+        <Label x:Name="orientationLabel" Grid.Row="3"
+               Style="{StaticResource BigValueLabel}" Text="?" />
+
+        <StackLayout Grid.Row="4" Spacing="20">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="Portrait">
+                        <VisualState.StateTriggers>
+                            <OrientationStateTrigger Orientation="Portrait" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="Orientation" Value="Vertical" />
+                            <Setter TargetName="orientationLabel" Property="Label.Text" Value="Portrait" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Landscape">
+                        <VisualState.StateTriggers>
+                            <OrientationStateTrigger Orientation="Landscape" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="Orientation" Value="Horizontal" />
+                            <Setter TargetName="orientationLabel" Property="Label.Text" Value="Landscape" />
+                            <Setter TargetName="orientationLabel" Property="Label.TextColor" Value="{StaticResource Accent}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <Border Style="{StaticResource Card}" WidthRequest="260"
+                    HorizontalOptions="Start" VerticalOptions="Start">
+                <Label Text="Card one" FontAttributes="Bold" />
+            </Border>
+            <Border Style="{StaticResource Card}" WidthRequest="260"
+                    HorizontalOptions="Start" VerticalOptions="Start">
+                <Label Text="Card two" FontAttributes="Bold" />
+            </Border>
+        </StackLayout>
+    </Grid>
+</ContentPage>

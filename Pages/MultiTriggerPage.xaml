@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 11 · Multi-trigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TriggersShowcase.Pages.MultiTriggerPage"
+             Title="11 · Multi-trigger">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="Multi-trigger" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="All conditions must be true. Here: at least one contact method, not both." />
+            <Label Style="{StaticResource TryItLabel}"
+                   Text="Try it: fill in just one field. Save is disabled only when BOTH are empty." />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Entry x:Name="email"
+                           Text=""
+                           Placeholder="Email" />
+                    <Entry x:Name="phone"
+                           Text=""
+                           Placeholder="Phone" />
+
+                    <Button Text="Save">
+                        <Button.Triggers>
+                            <!-- Disabled only when email AND phone are empty -->
+                            <MultiTrigger TargetType="Button">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding x:DataType='Entry',
+                                                                        Source={x:Reference email},
+                                                                        Path=Text.Length}"
+                                                      Value="0" />
+                                    <BindingCondition Binding="{Binding x:DataType='Entry',
+                                                                        Source={x:Reference phone},
+                                                                        Path=Text.Length}"
+                                                      Value="0" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="IsEnabled" Value="False" />
+                            </MultiTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 19 · DeviceStateTrigger & CompareStateTrigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TriggersShowcase.Pages.DeviceCompareTriggerPage"
+             Title="19 · Device &amp; Compare">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="Device &amp; Compare" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="Built-in state triggers: which platform am I on, and does a property equal a value?" />
+            <Label Style="{StaticResource TryItLabel}"
+                   Text="Try it: compare Mac and iOS, then tick the CheckBox." />
+
+            <!-- DeviceStateTrigger -->
+            <Border Style="{StaticResource Card}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="iOS">
+                            <VisualState.StateTriggers>
+                                <DeviceStateTrigger Device="iOS" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#CDE4FF" />
+                                <Setter TargetName="deviceLabel" Property="Label.Text" Value="Running on iOS" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="MacCatalyst">
+                            <VisualState.StateTriggers>
+                                <DeviceStateTrigger Device="MacCatalyst" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#FFDCE7" />
+                                <Setter TargetName="deviceLabel" Property="Label.Text" Value="Running on Mac Catalyst" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Android">
+                            <VisualState.StateTriggers>
+                                <DeviceStateTrigger Device="Android" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#D6F5DD" />
+                                <Setter TargetName="deviceLabel" Property="Label.Text" Value="Running on Android" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="WinUI">
+                            <VisualState.StateTriggers>
+                                <DeviceStateTrigger Device="WinUI" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#FFF1C9" />
+                                <Setter TargetName="deviceLabel" Property="Label.Text" Value="Running on Windows" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="DeviceStateTrigger" FontAttributes="Bold" />
+                    <Label x:Name="deviceLabel" Style="{StaticResource BigValueLabel}" Text="Running on ?" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- CompareStateTrigger -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="CompareStateTrigger" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="8">
+                        <CheckBox x:Name="checkBox" VerticalOptions="Center" />
+                        <Label Text="Check me" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" Padding="20">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup>
+                                <VisualState x:Name="Checked">
+                                    <VisualState.StateTriggers>
+                                        <CompareStateTrigger Property="{Binding x:DataType='CheckBox', Source={x:Reference checkBox}, Path=IsChecked}"
+                                                             Value="True" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}" />
+                                        <Setter TargetName="compareLabel" Property="Label.Text" Value="Checked" />
+                                        <Setter TargetName="compareLabel" Property="Label.TextColor" Value="White" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <VisualState.StateTriggers>
+                                        <CompareStateTrigger Property="{Binding x:DataType='CheckBox', Source={x:Reference checkBox}, Path=IsChecked}"
+                                                             Value="False" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="White" />
+                                        <Setter TargetName="compareLabel" Property="Label.Text" Value="Unchecked" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Label x:Name="compareLabel" Style="{StaticResource BigValueLabel}" Text="?" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

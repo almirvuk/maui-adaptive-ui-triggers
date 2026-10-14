@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 10 · Event trigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:actions="clr-namespace:TriggersShowcase.TriggerActions"
+             x:Class="TriggersShowcase.Pages.EventTriggerPage"
+             Title="10 · Event trigger">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="Event trigger" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="Runs a TriggerAction when an event fires. One-way: nothing is undone for you." />
+            <Label Style="{StaticResource TryItLabel}"
+                   Text="Try it: type 42, then 42a, then delete the a." />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Phone (numbers only)" FontAttributes="Bold" />
+
+                    <Entry Placeholder="Phone">
+                        <Entry.Triggers>
+                            <EventTrigger Event="TextChanged">
+                                <actions:NumericValidationTriggerAction />
+                            </EventTrigger>
+                        </Entry.Triggers>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

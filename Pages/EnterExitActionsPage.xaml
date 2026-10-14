@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 12 · EnterActions / ExitActions -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:actions="clr-namespace:TriggersShowcase.TriggerActions"
+             x:Class="TriggersShowcase.Pages.EnterExitActionsPage"
+             Title="12 · Enter / exit">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="EnterActions / ExitActions" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="Run code on the way in and out. FadeTriggerAction is a custom TriggerAction you write yourself." />
+            <Label Style="{StaticResource TryItLabel}"
+                   Text="Try it: click the job title, then click the second field." />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Entry Placeholder="Enter job title">
+                        <Entry.Triggers>
+                            <Trigger TargetType="Entry"
+                                     Property="Entry.IsFocused"
+                                     Value="True">
+                                <Trigger.EnterActions>
+                                    <actions:FadeTriggerAction StartsFrom="0" />
+                                </Trigger.EnterActions>
+
+                                <Trigger.ExitActions>
+                                    <actions:FadeTriggerAction StartsFrom="1" />
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </Entry.Triggers>
+                    </Entry>
+
+                    <Entry Placeholder="Click here to move focus" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

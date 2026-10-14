@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 16 · StateTrigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:TriggersShowcase.Converters"
+             x:Class="TriggersShowcase.Pages.StateTriggerPage"
+             Title="16 · StateTrigger">
+
+    <ContentPage.Resources>
+        <converters:InverseBoolConverter x:Key="inverseBooleanConverter" />
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="StateTrigger" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="A visual state is applied while its trigger's IsActive is true." />
+            <Label Style="{StaticResource TryItLabel}" Text="Try it: flip the switch." />
+
+            <HorizontalStackLayout Spacing="12">
+                <Switch x:Name="toggle" VerticalOptions="Center" />
+                <Label Text="Toggle me" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Border Style="{StaticResource Card}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="On">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{Binding x:DataType='Switch', Source={x:Reference toggle}, Path=IsToggled}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}" />
+                                <Setter TargetName="stateLabel" Property="Label.Text" Value="State: On" />
+                                <Setter TargetName="stateLabel" Property="Label.TextColor" Value="White" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Off">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{Binding x:DataType='Switch', Source={x:Reference toggle}, Path=IsToggled, Converter={StaticResource inverseBooleanConverter}}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+                                <Setter TargetName="stateLabel" Property="Label.Text" Value="State: Off" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <Label x:Name="stateLabel"
+                       Style="{StaticResource BigValueLabel}"
+                       Text="State: ?" />
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

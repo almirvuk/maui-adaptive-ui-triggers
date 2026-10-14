@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 17 · AdaptiveTrigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TriggersShowcase.Pages.AdaptiveTriggerPage"
+             Title="17 · AdaptiveTrigger">
+
+    <!-- No ScrollView: the layout must react to the window, not scroll inside it -->
+    <Grid Padding="32" RowSpacing="16" RowDefinitions="Auto,Auto,Auto,Auto,*">
+        <Label Style="{StaticResource HeadingLabel}" Text="AdaptiveTrigger" />
+        <Label Grid.Row="1" Style="{StaticResource CaptionLabel}"
+               Text="One layout, every window size: the breakpoint is in XAML." />
+        <Label Grid.Row="2" Style="{StaticResource TryItLabel}"
+               Text="Try it: drag the window across 800." />
+
+        <HorizontalStackLayout Grid.Row="3" Spacing="24">
+            <Label x:Name="widthLabel" FontAttributes="Bold" Text="Window width: ?" />
+            <Label x:Name="stateLabel" TextColor="{StaticResource Primary}" Text="State: ?" />
+        </HorizontalStackLayout>
+
+        <!-- VisualStateGroups attached directly to the single root element (avoids dotnet/maui #14259) -->
+        <StackLayout x:Name="RootStack" Grid.Row="4" Spacing="20">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="Vertical">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="Orientation" Value="Vertical" />
+                            <Setter TargetName="stateLabel" Property="Label.Text" Value="State: Vertical (MinWindowWidth 0)" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Horizontal">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="800" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="Orientation" Value="Horizontal" />
+                            <Setter TargetName="stateLabel" Property="Label.Text" Value="State: Horizontal (MinWindowWidth 800)" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <!-- Profile card -->
+            <Border Style="{StaticResource Card}" WidthRequest="300"
+                    HorizontalOptions="Start" VerticalOptions="Start">
+                <VerticalStackLayout Spacing="12">
+                    <Border WidthRequest="72" HeightRequest="72" StrokeShape="Ellipse"
+                            StrokeThickness="0" BackgroundColor="{StaticResource Primary}"
+                            HorizontalOptions="Start">
+                        <Label Text="AV" TextColor="White" FontSize="26" FontAttributes="Bold"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="Almir Vuk" FontSize="22" FontAttributes="Bold" />
+                    <Label Style="{StaticResource CaptionLabel}" Text="Microsoft MVP" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Contact form card -->
+            <Border Style="{StaticResource Card}" WidthRequest="360"
+                    HorizontalOptions="Start" VerticalOptions="Start">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Contact" FontAttributes="Bold" />
+                    <Entry Placeholder="Email" />
+                    <Entry Placeholder="Phone" />
+                    <Button Text="Save" />
+                </VerticalStackLayout>
+            </Border>
+        </StackLayout>
+    </Grid>
+</ContentPage>

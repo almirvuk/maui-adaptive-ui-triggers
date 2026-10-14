@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slides 6–7 · Property trigger -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TriggersShowcase.Pages.PropertyTriggerPage"
+             Title="06 · Property trigger">
+
+    <ContentPage.Resources>
+        <!-- Implicit style: every Entry on this page gets the trigger -->
+        <Style TargetType="Entry">
+            <Setter Property="FontSize" Value="18" />
+            <Style.Triggers>
+                <Trigger TargetType="Entry"
+                         Property="IsFocused"
+                         Value="True">
+                    <Setter Property="BackgroundColor" Value="Yellow" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="20">
+            <Label Style="{StaticResource HeadingLabel}" Text="Property trigger" />
+            <Label Style="{StaticResource CaptionLabel}"
+                   Text="Watch a property on the control itself; undo is automatic." />
+            <Label Style="{StaticResource TryItLabel}" Text="Try it: tab between the fields." />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Inline, on one Entry" FontAttributes="Bold" />
+
+                    <Entry Placeholder="Enter name">
+                        <Entry.Triggers>
+                            <Trigger TargetType="Entry"
+                                     Property="IsFocused"
+                                     Value="True">
+                                <Setter Property="BackgroundColor" Value="Yellow" />
+                            </Trigger>
+                        </Entry.Triggers>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="From the implicit Style" FontAttributes="Bold" />
+                    <Entry Placeholder="Email" />
+                    <Entry Placeholder="Phone" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

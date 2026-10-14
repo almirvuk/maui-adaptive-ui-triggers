@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Navigation: one flyout entry per demo page, numbered to match the slides -->
+<Shell x:Class="TriggersShowcase.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:pages="clr-namespace:TriggersShowcase.Pages"
+       Title="Triggers Showcase"
+       FlyoutBehavior="{OnIdiom Phone=Flyout, Default=Locked}"
+       FlyoutWidth="260">
+
+    <Shell.FlyoutHeader>
+        <VerticalStackLayout Padding="20,24,20,12" Spacing="2">
+            <Label Text="Triggers Showcase" FontSize="20" FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryDark}" />
+            <Label Text="State Triggers &amp; the VSM" FontSize="14"
+                   TextColor="{StaticResource Muted}" />
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Part 1 · Triggers" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent Title="06 · Property trigger" Route="property" ContentTemplate="{DataTemplate pages:PropertyTriggerPage}" />
+        <ShellContent Title="08 · Data trigger" Route="data" ContentTemplate="{DataTemplate pages:DataTriggerPage}" />
+        <ShellContent Title="09 · Converter" Route="converter" ContentTemplate="{DataTemplate pages:ConverterTriggerPage}" />
+        <ShellContent Title="10 · Event trigger" Route="event" ContentTemplate="{DataTemplate pages:EventTriggerPage}" />
+        <ShellContent Title="11 · Multi-trigger" Route="multi" ContentTemplate="{DataTemplate pages:MultiTriggerPage}" />
+        <ShellContent Title="12 · Enter / exit" Route="enterexit" ContentTemplate="{DataTemplate pages:EnterExitActionsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Part 2 · State triggers" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent Title="16 · StateTrigger" Route="state" ContentTemplate="{DataTemplate pages:StateTriggerPage}" />
+        <ShellContent Title="17 · AdaptiveTrigger" Route="adaptive" ContentTemplate="{DataTemplate pages:AdaptiveTriggerPage}" />
+        <ShellContent Title="18 · Orientation" Route="orientation" ContentTemplate="{DataTemplate pages:OrientationTriggerPage}" />
+        <ShellContent Title="19 · Device &amp; Compare" Route="devicecompare" ContentTemplate="{DataTemplate pages:DeviceCompareTriggerPage}" />
+    </FlyoutItem>
+
+</Shell>
