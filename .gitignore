@@ -4,8 +4,28 @@ obj/
 
 # User-specific files
 .vs/
+.idea/
 *.user
 *.suo
+*.DotSettings.user
+
+# Xcode / Apple
+xcuserdata/
+
+# Packaged apps
+*.apk
+*.aab
+*.ipa
+*.app/
+
+# Signing files (never commit these)
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+
+# Test results
+TestResults/
 
 # OS-generated files
 .DS_Store

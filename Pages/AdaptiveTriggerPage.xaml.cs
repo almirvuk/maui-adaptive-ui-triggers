@@ -8,11 +8,27 @@ public partial class AdaptiveTriggerPage : ContentPage
 	}
 
 	// AdaptiveTrigger checks Window.Width, not the page width (the locked flyout eats ~260).
-	protected override void OnSizeAllocated(double width, double height)
+	// Updated on Window.SizeChanged so it matches what the trigger sees.
+	protected override void OnAppearing()
 	{
-		base.OnSizeAllocated(width, height);
+		base.OnAppearing();
 
 		if (Window is not null)
-			widthLabel.Text = $"Window width: {Window.Width:0}";
+		{
+			Window.SizeChanged += OnWindowSizeChanged;
+			UpdateWidthLabel();
+		}
 	}
+
+	protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+
+		if (Window is not null)
+			Window.SizeChanged -= OnWindowSizeChanged;
+	}
+
+	void OnWindowSizeChanged(object? sender, EventArgs e) => UpdateWidthLabel();
+
+	void UpdateWidthLabel() => widthLabel.Text = $"Window width: {Window?.Width:0}";
 }

@@ -2,11 +2,13 @@
 <!-- Slide 18 · OrientationStateTrigger -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:triggers="clr-namespace:TriggersShowcase.StateTriggers"
              x:Class="TriggersShowcase.Pages.OrientationTriggerPage"
-             Title="18 · Orientation">
+             Title="18 · Orientation"
+             Shell.TabBarIsVisible="False">
 
-    <!-- No ScrollView: the layout itself must change -->
-    <Grid Padding="32" RowSpacing="16" RowDefinitions="Auto,Auto,Auto,Auto,*">
+    <!-- No ScrollView: the layout itself must change. No tab bar: it covers the cards in landscape. -->
+    <Grid x:Name="pageRoot" Padding="32" RowSpacing="16" RowDefinitions="Auto,Auto,Auto,Auto,*">
         <Label Style="{StaticResource HeadingLabel}" Text="OrientationStateTrigger" />
         <Label Grid.Row="1" Style="{StaticResource CaptionLabel}"
                Text="AdaptiveTrigger responds to window size; OrientationStateTrigger to device orientation." />
@@ -17,25 +19,31 @@
                Style="{StaticResource BigValueLabel}" Text="?" />
 
         <StackLayout Grid.Row="4" Spacing="20">
+            <!-- Custom trigger: OrientationStateTrigger stays on Portrait on iOS 27 -->
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup>
                     <VisualState x:Name="Portrait">
                         <VisualState.StateTriggers>
-                            <OrientationStateTrigger Orientation="Portrait" />
+                            <triggers:SceneOrientationStateTrigger Orientation="Portrait" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="Orientation" Value="Vertical" />
                             <Setter TargetName="orientationLabel" Property="Label.Text" Value="Portrait" />
+                            <Setter TargetName="pageRoot" Property="Layout.Padding" Value="32" />
+                            <Setter TargetName="pageRoot" Property="Grid.RowSpacing" Value="16" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Landscape">
                         <VisualState.StateTriggers>
-                            <OrientationStateTrigger Orientation="Landscape" />
+                            <triggers:SceneOrientationStateTrigger Orientation="Landscape" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
                             <Setter Property="Orientation" Value="Horizontal" />
                             <Setter TargetName="orientationLabel" Property="Label.Text" Value="Landscape" />
                             <Setter TargetName="orientationLabel" Property="Label.TextColor" Value="{StaticResource Accent}" />
+                            <!-- Less spacing so the cards fit in landscape -->
+                            <Setter TargetName="pageRoot" Property="Layout.Padding" Value="32,12" />
+                            <Setter TargetName="pageRoot" Property="Grid.RowSpacing" Value="6" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

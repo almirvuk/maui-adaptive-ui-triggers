@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Slide 17 · AdaptiveTrigger with three breakpoints -->
+<!-- Flyout collapsed and no tab bar, so the page is as wide as the window -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:TriggersShowcase.Models"
+             xmlns:data="clr-namespace:TriggersShowcase.Data"
+             xmlns:converters="clr-namespace:TriggersShowcase.Converters"
+             x:Class="TriggersShowcase.Pages.AdaptiveAgendaPage"
+             Title="17 · Adaptive agenda"
+             Shell.FlyoutBehavior="Flyout"
+             Shell.TabBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <converters:AreEqualConverter x:Key="areEqual" />
+
+        <!-- Selection highlight uses a DataTrigger: on Mac Catalyst the Selected state is lost when cells are recreated -->
+
+        <!-- Rows: Compact and Expanded -->
+        <DataTemplate x:Key="SessionRowTemplate" x:DataType="models:Session">
+            <!-- White root hides the native selection background -->
+            <Grid BackgroundColor="{StaticResource White}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected" />
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="16,12"
+                        BackgroundColor="Transparent">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Value="True">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{StaticResource areEqual}">
+                                    <Binding Path="." />
+                                    <Binding Path="SelectedItem" x:DataType="CollectionView"
+                                             Source="{RelativeSource AncestorType={x:Type CollectionView}}" />
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+                            <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+
+                    <Grid ColumnDefinitions="64,*" ColumnSpacing="12" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Label Grid.RowSpan="2" Text="{Binding Time}" FontSize="18" FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        <Label Grid.Column="1" Text="{Binding Title}" FontSize="18" FontAttributes="Bold"
+                               LineBreakMode="TailTruncation" />
+                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="8">
+                            <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5"
+                                     Color="{Binding TrackColor}" VerticalOptions="Center" />
+                            <Label Style="{StaticResource CaptionLabel}" FontSize="15" Text="{Binding Room}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+            </Grid>
+        </DataTemplate>
+
+        <!-- Cards: Medium -->
+        <DataTemplate x:Key="SessionCardTemplate" x:DataType="models:Session">
+            <Border Style="{StaticResource Card}" Padding="20">
+                <!-- Empty Selected state turns off the native selection background -->
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected" />
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource areEqual}">
+                                <Binding Path="." />
+                                <Binding Path="SelectedItem" x:DataType="CollectionView"
+                                         Source="{RelativeSource AncestorType={x:Type CollectionView}}" />
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                        <Setter Property="StrokeThickness" Value="2" />
+                    </DataTrigger>
+                </Border.Triggers>
+
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5"
+                                 Color="{Binding TrackColor}" VerticalOptions="Center" />
+                        <Label Text="{Binding Track}" FontSize="15" FontAttributes="Bold"
+                               TextColor="{Binding TrackColor}" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}" MaxLines="2" LineBreakMode="TailTruncation" />
+                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding Speaker}" />
+                    <Label FontSize="16">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding Time}" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                                <Span Text="  ·  " TextColor="{StaticResource Muted}" />
+                                <Span Text="{Binding Room}" TextColor="{StaticResource Muted}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <!-- No ScrollView: the layout itself must change -->
+    <Grid x:Name="AgendaRoot" Padding="32" RowSpacing="20" ColumnSpacing="24"
+          RowDefinitions="Auto,Auto,*">
+
+        <!-- Visual states on the root Grid, not in a Style (dotnet/maui #14259) -->
+        <VisualStateManager.VisualStateGroups>
+            <!-- Overlapping breakpoints: at 1200 all three match; the highest matching threshold wins. -->
+            <VisualStateGroup x:Name="WidthStates">
+                <VisualState x:Name="Compact">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="Padding" Value="16" />
+                        <Setter Property="ColumnDefinitions" Value="*" />
+                        <Setter TargetName="centerPane" Property="Grid.Column" Value="0" />
+                        <Setter TargetName="trackSidebar" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="detailPane" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="chipsRow" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="filterButton" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="sessionList" Property="ItemsView.ItemTemplate" Value="{StaticResource SessionRowTemplate}" />
+                        <Setter TargetName="sessionList" Property="StructuredItemsView.ItemsLayout">
+                            <Setter.Value>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="4" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter TargetName="breakpointBadge" Property="Label.Text" Value="Compact · 0+" />
+                        <Setter TargetName="breakpointPill" Property="VisualElement.BackgroundColor" Value="{StaticResource Muted}" />
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Medium">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="600" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="Padding" Value="32" />
+                        <Setter Property="ColumnDefinitions" Value="*" />
+                        <Setter TargetName="centerPane" Property="Grid.Column" Value="0" />
+                        <Setter TargetName="trackSidebar" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="detailPane" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="chipsRow" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="filterButton" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="sessionList" Property="ItemsView.ItemTemplate" Value="{StaticResource SessionCardTemplate}" />
+                        <Setter TargetName="sessionList" Property="StructuredItemsView.ItemsLayout">
+                            <Setter.Value>
+                                <GridItemsLayout Orientation="Vertical" Span="2"
+                                                 HorizontalItemSpacing="16" VerticalItemSpacing="16" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter TargetName="breakpointBadge" Property="Label.Text" Value="Medium · 600+" />
+                        <Setter TargetName="breakpointPill" Property="VisualElement.BackgroundColor" Value="{StaticResource Primary}" />
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="Expanded">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1000" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="Padding" Value="32" />
+                        <Setter Property="ColumnDefinitions" Value="220,*,360" />
+                        <Setter TargetName="centerPane" Property="Grid.Column" Value="1" />
+                        <Setter TargetName="trackSidebar" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="detailPane" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="chipsRow" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="filterButton" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="sessionList" Property="ItemsView.ItemTemplate" Value="{StaticResource SessionRowTemplate}" />
+                        <Setter TargetName="sessionList" Property="StructuredItemsView.ItemsLayout">
+                            <Setter.Value>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="4" />
+                            </Setter.Value>
+                        </Setter>
+                        <Setter TargetName="breakpointBadge" Property="Label.Text" Value="Expanded · 1000+" />
+                        <Setter TargetName="breakpointPill" Property="VisualElement.BackgroundColor" Value="{StaticResource Accent}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+
+            <!-- Groups are independent: width and height states apply at the same time -->
+            <VisualStateGroup x:Name="HeightStates">
+                <VisualState x:Name="Short">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowHeight="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="RowSpacing" Value="8" />
+                        <Setter TargetName="heroBanner" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="tryItLabel" Property="VisualElement.IsVisible" Value="False" />
+                        <Setter TargetName="dayCaption" Property="VisualElement.IsVisible" Value="False" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Tall">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowHeight="700" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Property="RowSpacing" Value="20" />
+                        <Setter TargetName="heroBanner" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="tryItLabel" Property="VisualElement.IsVisible" Value="True" />
+                        <Setter TargetName="dayCaption" Property="VisualElement.IsVisible" Value="True" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.ColumnSpan="3" Spacing="6">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label Style="{StaticResource HeadingLabel}" Text="Agenda" VerticalOptions="Center" />
+                <!-- Text and colour set by the width states -->
+                <Border x:Name="breakpointPill" Grid.Column="1" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 18" Padding="16,8"
+                        BackgroundColor="{StaticResource Muted}" VerticalOptions="Center">
+                    <Label x:Name="breakpointBadge" Text="?" FontSize="17" FontAttributes="Bold"
+                           TextColor="{StaticResource White}" />
+                </Border>
+            </Grid>
+            <Label x:Name="tryItLabel" Style="{StaticResource TryItLabel}"
+                   Text="Try it: drag the window from ~450 → 750 → 1200." />
+            <Label x:Name="widthLabel" FontAttributes="Bold" Text="Window width: ?" />
+        </VerticalStackLayout>
+
+        <!-- Hero banner: height states only -->
+        <Border x:Name="heroBanner" Grid.Row="1" Grid.ColumnSpan="3" IsVisible="False"
+                StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="24,18">
+            <Border.Background>
+                <LinearGradientBrush EndPoint="1,0">
+                    <GradientStop Color="{StaticResource Primary}" Offset="0" />
+                    <GradientStop Color="{StaticResource Accent}" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <VerticalStackLayout Spacing="2">
+                <Label Text="DotNet Conf 2026 · Day 1" FontSize="26" FontAttributes="Bold"
+                       TextColor="{StaticResource White}" />
+                <Label Text="10 sessions · 4 tracks · 4 rooms" TextColor="{StaticResource White}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Track sidebar (Expanded) -->
+        <Border x:Name="trackSidebar" Grid.Row="2" Grid.Column="0" IsVisible="False"
+                Style="{StaticResource Card}" Padding="16,20" VerticalOptions="Start">
+            <ScrollView>
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="TRACKS" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Muted}"
+                           Margin="8,0,0,6" />
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="8,8"
+                            BackgroundColor="{StaticResource Primary}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="All tracks" FontAttributes="Bold" TextColor="{StaticResource White}" />
+                            <Label Grid.Column="1" Text="10" TextColor="{StaticResource White}" />
+                        </Grid>
+                    </Border>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="8,6">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.MobileColor}" />
+                        <Label Grid.Column="1" Text="Mobile" />
+                        <Label Grid.Column="2" Text="3" TextColor="{StaticResource Muted}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="8,6">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.WebColor}" />
+                        <Label Grid.Column="1" Text="Web" />
+                        <Label Grid.Column="2" Text="2" TextColor="{StaticResource Muted}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="8,6">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.CloudColor}" />
+                        <Label Grid.Column="1" Text="Cloud" />
+                        <Label Grid.Column="2" Text="2" TextColor="{StaticResource Muted}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="8,6">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.AIColor}" />
+                        <Label Grid.Column="1" Text="AI" />
+                        <Label Grid.Column="2" Text="3" TextColor="{StaticResource Muted}" />
+                    </Grid>
+
+                    <Label Text="DAYS" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Muted}"
+                           Margin="8,14,0,4" />
+                    <Label Text="Day 1 · Tuesday" FontAttributes="Bold" TextColor="{StaticResource Primary}" Margin="8,4" />
+                    <Label Text="Day 2 · Wednesday" Margin="8,4" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- Session list -->
+        <Grid x:Name="centerPane" Grid.Row="2" RowDefinitions="Auto,Auto,*" RowSpacing="12">
+            <!-- Chips (Medium) or Filter button (Compact) -->
+            <HorizontalStackLayout x:Name="chipsRow" Spacing="10" IsVisible="False">
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16,8"
+                        BackgroundColor="{StaticResource Primary}">
+                    <Label Text="All" FontAttributes="Bold" TextColor="{StaticResource White}" />
+                </Border>
+                <Border Stroke="{StaticResource SurfaceBorder}" StrokeShape="RoundRectangle 18" Padding="14,8"
+                        BackgroundColor="{StaticResource Surface}">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.MobileColor}" />
+                        <Label Text="Mobile" />
+                    </HorizontalStackLayout>
+                </Border>
+                <Border Stroke="{StaticResource SurfaceBorder}" StrokeShape="RoundRectangle 18" Padding="14,8"
+                        BackgroundColor="{StaticResource Surface}">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.WebColor}" />
+                        <Label Text="Web" />
+                    </HorizontalStackLayout>
+                </Border>
+                <Border Stroke="{StaticResource SurfaceBorder}" StrokeShape="RoundRectangle 18" Padding="14,8"
+                        BackgroundColor="{StaticResource Surface}">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.CloudColor}" />
+                        <Label Text="Cloud" />
+                    </HorizontalStackLayout>
+                </Border>
+                <Border Stroke="{StaticResource SurfaceBorder}" StrokeShape="RoundRectangle 18" Padding="14,8"
+                        BackgroundColor="{StaticResource Surface}">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="5" VerticalOptions="Center"
+                                 Color="{x:Static data:SampleSessions.AIColor}" />
+                        <Label Text="AI" />
+                    </HorizontalStackLayout>
+                </Border>
+            </HorizontalStackLayout>
+            <Button x:Name="filterButton" Text="Filter" />
+
+            <Label x:Name="dayCaption" Grid.Row="1" Text="Day 1 · 10 sessions" FontAttributes="Bold" TextColor="{StaticResource Muted}" />
+
+            <!-- ItemsLayout and ItemTemplate set by the width states -->
+            <CollectionView x:Name="sessionList" Grid.Row="2"
+                            ItemsSource="{x:Static data:SampleSessions.All}"
+                            SelectionMode="Single"
+                            SelectedItem="{x:Static data:SampleSessions.First}"
+                            ItemTemplate="{StaticResource SessionRowTemplate}" />
+        </Grid>
+
+        <!-- Detail pane (Expanded): the selected session -->
+        <Border x:Name="detailPane" Grid.Row="2" Grid.Column="2" IsVisible="False"
+                Style="{StaticResource Card}" VerticalOptions="Fill"
+                BindingContext="{Binding SelectedItem, Source={x:Reference sessionList}, x:DataType=CollectionView}"
+                x:DataType="models:Session">
+            <ScrollView>
+                <VerticalStackLayout Spacing="16">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView WidthRequest="12" HeightRequest="12" CornerRadius="6"
+                                 Color="{Binding TrackColor}" VerticalOptions="Center" />
+                        <Label Text="{Binding Track}" FontAttributes="Bold" TextColor="{Binding TrackColor}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding Title}" FontSize="24" FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryDark}" />
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Border WidthRequest="48" HeightRequest="48" StrokeThickness="0" StrokeShape="Ellipse"
+                                BackgroundColor="{StaticResource Primary}">
+                            <Label Text="{Binding SpeakerInitials}" FontSize="17" FontAttributes="Bold"
+                                   TextColor="{StaticResource White}"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding Speaker}" FontAttributes="Bold" />
+                            <Label Style="{StaticResource CaptionLabel}" FontSize="15" Text="Speaker" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <Label Text="TIME" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Muted}" />
+                        <Label Grid.Row="1" Text="{Binding Time}" FontSize="20" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="ROOM" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Muted}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Room}" FontSize="20" FontAttributes="Bold" />
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{StaticResource SurfaceBorder}" />
+
+                    <Label Text="{Binding Abstract}" LineHeight="1.3" />
+
+                    <Button Text="Add to my agenda" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
+</ContentPage>

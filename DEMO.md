@@ -83,11 +83,30 @@
 - **Note:** the trigger checks **Window** width, not page width. The locked flyout takes 260, so just past 800 the page is only ~540 wide and the second card is clipped on the right until the window is about 1000+. Do the drag from ~700 to ~1100 so the end state looks clean.
 - **Say:** "No code, no size handler: the breakpoint lives in XAML, and the same page is the phone layout and the desktop layout."
 
+## 17 · Adaptive agenda (slide 17, bonus)
+
+- **Open:** `Pages/AdaptiveAgendaPage.xaml`
+- **Highlight:** lines 112–211: one `WidthStates` group (`MinWindowWidth` 0 / 600 / 1000) and an independent `HeightStates` group, both on `AgendaRoot`. Then line 168 (`ColumnDefinitions` `"220,*,360"` from a setter) and lines 128 / 151 / 175 (a different `ItemsLayout` per state).
+- **Before:** on this page the flyout collapses behind the hamburger, so the page is as wide as the window. Make the window narrow (~450) before you start.
+- **Drag:** the Mac window's right edge from ~450 → 750 → 1200, pausing at each stop.
+  - **~450 · Compact** (grey badge "Compact · 0+"): point at the single list (time · title · room) and the lone Filter button.
+    **Say:** "Phone layout: one column, one Filter button, nothing competing for space."
+  - **750 · Medium** (purple badge "Medium · 600+"): point at the chips that replaced the Filter button and the 2-column card grid.
+    **Say:** "Crossing 600 swaps the ItemTemplate and the ItemsLayout. Same CollectionView, same data, just setters."
+  - **1200 · Expanded** (pink badge "Expanded · 1000+"): point at the track sidebar, then click a session and watch the detail pane follow.
+    **Say:** "At 1200 all three states match and the highest threshold wins. Even the root Grid's columns come from a setter."
+- **Bonus:** drag the bottom edge up until the window is under ~700 tall. The hero banner (plus the Try-it line and day caption) disappears while the width state stays put. Keep the window 700+ tall during the width drag so the hero stays visible.
+  **Say:** "Two groups, two independent questions: width and height states apply at the same time."
+- **Expect:** the badge changes at exactly the moment the layout does, and the selected session stays selected across every breakpoint.
+- **Note:** "Window width" is the number AdaptiveTrigger compares. On Mac it's in macOS points while the content is laid out about 1.3× wider (Catalyst runs the iPad layout scaled to 77%), so each layout looks roomier than the number suggests.
+- **iPhone:** portrait is Compact, landscape is Medium (Cmd+← / Cmd+→).
+
 ## 18 · Orientation (slide 18)
 
 - **Open:** `Pages/OrientationTriggerPage.xaml`
-- **Highlight:** lines 20–42 (two `OrientationStateTrigger`s).
-- **Click:** on the iPhone simulator, Cmd+← / Cmd+→.
+- **Highlight:** lines 23–50 (two orientation triggers; the Landscape state also tightens the page so the cards fit).
+- **Note:** the page uses `SceneOrientationStateTrigger` (`StateTriggers/SceneOrientationStateTrigger.cs`), a drop-in for `OrientationStateTrigger`. On iOS 27 the built-in one never leaves Portrait, because MAUI reads the deprecated status-bar orientation. Good gotcha for the slide.
+- **Click:** on the iPhone simulator (DeviceHub in Xcode 27), Cmd+← / Cmd+→.
 - **Expect:** "Portrait" with stacked cards; "Landscape" in pink with cards side by side. On Mac it always says Landscape.
 - **Say:** "AdaptiveTrigger reacts to window size; OrientationStateTrigger reacts to how the device is held."
 

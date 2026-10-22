@@ -29,6 +29,7 @@
     <FlyoutItem Title="Part 2 · State triggers" FlyoutDisplayOptions="AsMultipleItems">
         <ShellContent Title="16 · StateTrigger" Route="state" ContentTemplate="{DataTemplate pages:StateTriggerPage}" />
         <ShellContent Title="17 · AdaptiveTrigger" Route="adaptive" ContentTemplate="{DataTemplate pages:AdaptiveTriggerPage}" />
+        <ShellContent Title="17 · Adaptive agenda" Route="agenda" ContentTemplate="{DataTemplate pages:AdaptiveAgendaPage}" />
         <ShellContent Title="18 · Orientation" Route="orientation" ContentTemplate="{DataTemplate pages:OrientationTriggerPage}" />
         <ShellContent Title="19 · Device &amp; Compare" Route="devicecompare" ContentTemplate="{DataTemplate pages:DeviceCompareTriggerPage}" />
     </FlyoutItem>
